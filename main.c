@@ -16,32 +16,29 @@ char* addNginxToken() {
     return authToken;
 }
 
-void TokenChecker() {
-    char *token = addNginxToken();
-    printf("%s", token);
+int addLocalHostPort() {
+    int port = 0;
+    printf("Please enter your file runned port: ");
+    scanf("%d", &port);
+    return port;
 }
 
-void FuncOfCurl() {
+void PortChecker() {
+    int port = addLocalHostPort();
+    char *command = malloc(128 * sizeof(char));
+    sprintf(command, "ngrok http %d", port);
+    system(command); 
+}
 
-    CURL * curl;
-
-    CURLcode res;
-    curl = curl_easy_init();
-    if(curl) {
-        curl_easy_setopt(curl, CURLOPT_URL, "https://www.youtube.com/");
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
-        curl_easy_setopt(curl, CURLOPT_USERAGENT, "my-c-client/1.0");
-        res = curl_easy_perform(curl);
-
-        if(res != CURLM_OK) {
-            fprintf(stderr, "error: %s\n", curl_easy_strerror);
-        }
-
-        curl_easy_cleanup(curl);
-    }
+void TokenChecker() {
+    char *token = addNginxToken();
+    char *command = malloc(250 * sizeof(char));
+    sprintf(command, "ngrok config add-authtoken %s", token);
+    system(command);
 }
 
 int main(void) {
     TokenChecker();
+    PortChecker();
     return 0;
 }
